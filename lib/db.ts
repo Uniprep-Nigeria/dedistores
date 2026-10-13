@@ -1,14 +1,9 @@
-import { NextResponse } from 'next/server';
-import { verifyPaystackReference } from '@/lib/paystack';
+import { PrismaClient } from '@prisma/client';
 
-export async function POST(request: Request) {
-  const body = await request.json();
-  const { reference } = body;
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-  if (!reference) {
-    return NextResponse.json({ error: 'Reference is required.' }, { status: 400 });
-  }
+export const db = globalForPrisma.prisma ?? new PrismaClient();
 
-  const result = await verifyPaystackReference(reference);
-  return NextResponse.json(result);
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = db;
 }
