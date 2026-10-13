@@ -1,0 +1,72 @@
+import { db } from '@/lib/db';
+
+export async function getHomePageData() {
+  const categories = await db.category.findMany({ orderBy: { name: 'asc' } });
+
+  const featuredProducts = await db.product.findMany({
+    where: { featured: true },
+    include: { category: true, shop: true },
+    take: 4,
+  });
+
+  const trendingProducts = await db.product.findMany({
+    where: { trending: true },
+    include: { category: true, shop: true },
+    take: 4,
+  });
+
+  const flashDeals = await db.product.findMany({
+    where: { flashDeal: true },
+    include: { category: true, shop: true },
+    take: 3,
+  });
+
+  return {
+    categories,
+    featuredProducts: featuredProducts.map((product) => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      compareAtPrice: product.compareAtPrice,
+      shortDescription: product.shortDescription,
+      images: product.images,
+      category: product.category ? { name: product.category.name } : null,
+      shop: product.shop ? { name: product.shop.name } : null,
+      featured: product.featured,
+      trending: product.trending,
+      flashDeal: product.flashDeal,
+      discountPercent: product.discountPercent,
+      rating: product.avgRating,
+    })),
+    trendingProducts: trendingProducts.map((product) => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      compareAtPrice: product.compareAtPrice,
+      shortDescription: product.shortDescription,
+      images: product.images,
+      category: product.category ? { name: product.category.name } : null,
+      shop: product.shop ? { name: product.shop.name } : null,
+      featured: product.featured,
+      trending: product.trending,
+      flashDeal: product.flashDeal,
+      discountPercent: product.discountPercent,
+      rating: product.avgRating,
+    })),
+    flashDeals: flashDeals.map((product) => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      compareAtPrice: product.compareAtPrice,
+      shortDescription: product.shortDescription,
+      images: product.images,
+      category: product.category ? { name: product.category.name } : null,
+      shop: product.shop ? { name: product.shop.name } : null,
+      featured: product.featured,
+      trending: product.trending,
+      flashDeal: product.flashDeal,
+      discountPercent: product.discountPercent,
+      rating: product.avgRating,
+    })),
+  };
+}
